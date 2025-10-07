@@ -57,15 +57,21 @@ namespace GGTemps.Menu
                     {
                         CreateMenu();
                         RecenterMenu(rightHanded, keyboardOpen);
-                        //GorillaTagger.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)OpenAni());
+                        MelonCoroutines.Start(OpenAni());
                         if (reference == null)
                         {
                             CreateReference(rightHanded);
                         }
                     }
                 }
-                else if ((toOpen || keyboardOpen)) RecenterMenu(rightHanded, keyboardOpen);
-                
+                else
+                {
+                    if ((toOpen || keyboardOpen)) RecenterMenu(rightHanded, keyboardOpen);
+                    else
+                    {
+                        MelonCoroutines.Start(CloseAni());
+                    }
+                }
             }
             catch (Exception exc)
             {
@@ -118,9 +124,8 @@ namespace GGTemps.Menu
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
-            {
                 Debug.LogError("Audio download error: " + www.error);
-            }
+            
             else
             {
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
@@ -162,30 +167,11 @@ namespace GGTemps.Menu
             }
         }
 
-        public class CoroutineHandler : MonoBehaviour
-        {
-            public static CoroutineHandler instance;
-            public static CoroutineHandler Instance
-            {
-                get
-                {
-                    if (instance == null)
-                    {
-                        GameObject obj = new GameObject("CoroutineHandler");
-                        obj.hideFlags = HideFlags.HideAndDontSave;
-                        instance = obj.AddComponent<CoroutineHandler>();
-                        GameObject.DontDestroyOnLoad(obj);
-                    }
-                    return instance;
-                }
-            }
-        }
-
         public static IEnumerator OpenAni()
         {
             if (menu == null) yield break;
 
-            //GorillaTagger.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)PlaySFX(openSfxUrl));
+            MelonCoroutines.Start(PlaySFX(openSfxUrl));
             float duration = 0.45f;
             float elapsed = 0f;
             Vector3 startScale = Vector3.zero;
@@ -218,7 +204,7 @@ namespace GGTemps.Menu
             if (menu == null || Close) yield break;
 
             Close = true;
-            //GorillaTagger.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)PlaySFX(closeSfxUrl));
+            MelonCoroutines.Start(PlaySFX(closeSfxUrl));
             float duration = 0.35f;
             float elapsed = 0f;
             Vector3 startScale = menu.transform.localScale;
@@ -426,17 +412,11 @@ namespace GGTemps.Menu
                 }
             }
 
-
-
-
-
-
             foreach (GameObject obj in ToChange)
             {
                 obj.GetComponent<Renderer>().material.color = new Color32(60, 15, 15, 255);
             }
         
-
             ColorChanger colorChanger = menuBackground.AddComponent<ColorChanger>();
             colorChanger.colorInfo = backgroundColor;
             colorChanger.Start();
@@ -473,17 +453,9 @@ namespace GGTemps.Menu
             component.rotation = Quaternion.Euler(new Vector3(180f, 90f, 90f));
 
             // Start color transition
-            //CoroutineHandler.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)new Main().AnimateColorTransition(text));
-            //GorillaTagger.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)new Main().AnimateColorTransition(text));           
-        //if (animateTitle) // IF TRUE ITTLL BREAK THE TEMPLATE
-        //{
-        //    //CoroutineHandler.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)AnimateTitle(text));
-        //    //GorillaTagger.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)AnimateTitle(text));
-        //}
-        else
-        {
-            text.text = PluginInfo.Name;
-        }
+            MelonCoroutines.Start(new Main().AnimateColorTransition(text));
+            if (animateTitle) MelonCoroutines.Start(AnimateTitle(text));
+            else text.text = PluginInfo.Name;
         
 
 // Color transition coroutine
@@ -541,7 +513,7 @@ namespace GGTemps.Menu
                 component22.sizeDelta = new Vector2(0.09f, 0.01f);
                 component22.position = new Vector3(0.06f, 0.08f, -0.185f);
                 component22.rotation = Quaternion.Euler(new Vector3(180f, 90f, 90f));
-                //CoroutineHandler.Instance.StartCoroutine((Il2CppSystem.Collections.IEnumerator)UpdatePingText(text1));
+                MelonCoroutines.Start(UpdatePingText(text1));
             }
 
 
@@ -1263,10 +1235,7 @@ namespace GGTemps.Menu
                             if (worked)
                             {
                                 Classes.Button collide = hit.transform.gameObject.GetComponent<Classes.Button>();
-                                if (collide != null)
-                                {
-                                    collide.OnTriggerEnter(buttonCollider);
-                                }
+                                collide?.OnTriggerEnter(buttonCollider);
                             }
                         }
                         else
@@ -1364,11 +1333,6 @@ namespace GGTemps.Menu
         }
         public IEnumerator AnimateColorTransition(Text text)
         {
-            // Change this line in CreateMenu():
-            // CoroutineHandler.Instance.StartCoroutine(AnimateColorTransition(text));
-
-            // To this:
-            
             Color color1 = new Color(140f / 255f, 35f / 255f, 35f / 255f);
             Color color2 = new Color(220f / 255f, 50f / 255f, 50f / 255f);
             float duration = 2f; 

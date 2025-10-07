@@ -1,3 +1,4 @@
+using MelonLoader;
 using Photon.Pun;
 using System;
 using UnityEngine;
@@ -19,9 +20,8 @@ namespace GGTemps.Classes
 			{
 				buttonCooldown = Time.time + 0.2f;
 				GorillaTagger.Instance.StartVibration(rightHanded, GorillaTagger.Instance.tagHapticStrength / 2f, GorillaTagger.Instance.tagHapticDuration / 2f);
-				PlaySFX(buttonSfxUrl);
+                MelonCoroutines.Start(PlaySFX(buttonSfxUrl));
 				Toggle(this.relatedText);
-
 			}
 		}
 		public static string buttonSfxUrl = "https://github.com/okcauq/menusounds/raw/refs/heads/main/sound.mp3";

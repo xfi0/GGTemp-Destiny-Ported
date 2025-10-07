@@ -64,7 +64,7 @@ namespace GGTemps.Notifications
                 GameObject Text = new GameObject("NotificationText");
                 Text.transform.SetParent(canvasObject.transform);
                 notificationDisplay = Text.AddComponent<Text>();
-                notificationDisplay.fontSize = 10;
+                notificationDisplay.fontSize = 8;
                 notificationDisplay.rectTransform.sizeDelta = new Vector2(260f, 160f);
                 notificationDisplay.rectTransform.localScale = new Vector3(0.015f, 0.015f, 1.5f);
                 notificationDisplay.rectTransform.localPosition = new Vector3(-5f, -1.5f, 0f);
